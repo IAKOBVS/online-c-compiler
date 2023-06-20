@@ -13,29 +13,31 @@
         <h1>Online Compiler</h1>  
 
         <label for="code">Source code:</label>
-        <textarea rows="20" cols="100"> </textarea>
+        <textarea id="codeInput" rows="20" cols="100"> </textarea>
 
         </br>
         </br>
 
         <label for="flags">Flags: </label>
-        <textarea rows="5" cols="100"> </textarea>
+        <textarea id="flagsInput" rows="5" cols="100"> </textarea>
 
         </br>
         </br>
-
-        <input type="button" id="submit" value="Click to save">
+        <button onclick="getSourceCodeFlagInput()" id="button">Submit</button>
         <script>
-            const code = document.getElementById('code')
-            const flags = document.getElementById('flags')
-            const button = document.getElementById('button')
-
-            function f()
+            function getSourceCodeFlagInput()
             {
-                console.log(`${code.value}`)
-            }
+                    var code = document.getElementById('codeInput')
+                    var flags = document.getElementById('flagsInput')
 
-            button.addEventListener('click', f)
+                let xhr = new XMLHttpRequest()
+                xhr.oepn('POST', '/')
+                xhr.setRequestHeader('Content-Type', 'application/json')
+                console.log(payload)
+                let payloadString = JSON.stringify(payload)
+                console.log(payloadString)
+                xhr.send(payloadString)
+            }
         </script>
     </main>
   </body>
