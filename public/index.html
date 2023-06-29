@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Online Compiler</title>
+</head>
+<body>
+  <h1>Online Compiler</h1>
+  <textarea type="text" id="textInput" rows="20" cols="100"> </textarea>
+  <button id="submitButton">Compile</button>
+  <div id="output"></div>
+
+  <script>
+    const submitButton = document.getElementById('submitButton');
+    const textInput = document.getElementById('textInput');
+    const output = document.getElementById('output');
+
+    submitButton.addEventListener('click', () => {
+      const input = textInput.value;
+
+      // Send the input to the server for processing
+      fetch('/compile', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ input })
+      })
+        .then(response => response.text())
+        .then(data => {
+          // Display the output received from the server
+          output.textContent = data;
+        })
+        .catch(error => {
+          console.error('Error:', error);
+        });
+    });
+  </script>
+</body>
+</html>
