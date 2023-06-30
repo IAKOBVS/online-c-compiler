@@ -21,8 +21,8 @@ app.get('/', (req, res) => {
 app.post('/compile', (req, res) => {
 	// capture user input
 	const flag = req.body.flag;
-	if (!flag.match(/^[- _+=()0-9A-Za-z]*$/)) {
-		res.send('Passing illegal characters as flags! Only use characters in [- _+=()0-9A-Za-z].');
+	if (!flag.match(/^[- _+=0-9A-Za-z]*$/)) {
+		res.send('Passing illegal characters as flags! Only use characters in [- _+=0-9A-Za-z].');
 		return;
 	}
 	const compiler = req.body.compiler.toLowerCase();
@@ -44,6 +44,7 @@ function compile(compiler, flag, text)
 		// return error.message;
 		return '<br>Compilation failed!<br>' + String(error.message)
 			.replace(/\n/g, '')
+			// only show compiler warnings
 			.replace(/^.*?-fsyntax-only -x c -/, '')
 			.replace(/<stdin>:/g, '<br>');
 	}
