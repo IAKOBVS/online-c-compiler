@@ -10,16 +10,24 @@
         Online C Compiler
     </h1>
     <h2>
+        Compiler:
+    </h2>
+    <select name="Compilers" id="compilerInput">
+        <option value="gcc">gcc</option>
+        <option value="clang">clang</option>
+    </select>
+    <h2>
         Flags:
     </h2>
-	<textarea type="text" id="flagInput">
-    </textarea>
+	<textarea type="text" id="flagInput">-Wall -Wextra</textarea>
     <br>
     <h2>
         Source code:
     </h2>
-	<textarea type="text" id="textInput" rows="20" cols="100">
-    </textarea>
+    <textarea type="text" id="textInput" rows="20" cols="100">int main()
+{
+    return 0;
+}</textarea>
 	<button id="submitButton">
         Compile
     </button>
@@ -27,13 +35,15 @@
     </div>
 	<script>
 		const submitButton = document.getElementById('submitButton');
+		const compilerInput = document.getElementById('compilerInput');
 		const flagInput = document.getElementById('flagInput');
 		const textInput = document.getElementById('textInput');
 		const output = document.getElementById('output');
 
 		submitButton.addEventListener('click', () => {
-			const input = textInput.value;
+			const compiler = compilerInput.value;
 			const flag = flagInput.value;
+			const text = textInput.value;
 
 			// send input to server for processing
 			fetch('/compile', {
@@ -41,7 +51,7 @@
 				headers: {
 					'Content-Type': 'application/json'
 				},
-				body: JSON.stringify({ input, flag })
+				body: JSON.stringify({ compiler, flag, text })
 			})
 				.then(response => response.text())
 				.then(data => {
