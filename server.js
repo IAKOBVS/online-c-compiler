@@ -1,7 +1,9 @@
+// @ts-check
 const port = 3000;
 const express = require('express');
 const app = express();
 const cp = require('child_process');
+const path = require('path');
 
 app.use(express.static('public'));
 app.use(express.urlencoded({ extended: true }));
@@ -18,12 +20,12 @@ app.get('/', (req, res) => {
 
 app.post('/compile', (req, res) => {
 	// capture user input
-	const compiler = req.body.compiler.toLowerCase();
 	const flag = req.body.flag;
 	if (!flag.match(/^[- _+=()0-9A-Za-z]*$/)) {
-		res.send('Passing illegal characters as flags! Only use characters in [- _+=()0-9A-Za-z].')
+		res.send('Passing illegal characters as flags! Only use characters in [- _+=()0-9A-Za-z].');
 		return;
 	}
+	const compiler = req.body.compiler.toLowerCase();
 	const text = req.body.text;
 	// process user text
 	const output = compile(compiler, flag, text);
@@ -35,12 +37,11 @@ function compile(compiler, flag, text)
 {
 	try {
 		// compile user text with shell
-		cp.execSync(`printf "%s" "${text} /* EOF */" | ${compiler} ${flag} -Werror -fsyntax-only -x c -`);
+		cp.execSync(`printf "%s" "${text}" | ${compiler} ${flag} -Werror -fsyntax-only -x c -`);
 		// return compiler output
 		return 'Compiled successfully!';
 	} catch (error) {
 		// return error.message;
-		console.log(error.message);
 		return '<br>Compilation failed!<br>' + String(error.message)
 			.replace(/\n/g, '')
 			.replace(/^.*?-fsyntax-only -x c -/, '')
