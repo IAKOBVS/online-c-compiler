@@ -56,7 +56,7 @@
 				.then(response => response.text())
 				.then(data => {
 					// display output from server
-					output.textContent = data;
+					output.innerHTML = data;
 				})
 				.catch(error => {
 					console.error('Error:', error);

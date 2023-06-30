@@ -35,10 +35,15 @@ function compile(compiler, flag, text)
 {
 	try {
 		// compile user text with shell
-		cp.execSync(`printf "%s" "${text}" | ${compiler} ${flag} -Werror -fsyntax-only -x c -`);
+		cp.execSync(`printf "%s" "${text} /* EOF */" | ${compiler} ${flag} -Werror -fsyntax-only -x c -`);
 		// return compiler output
 		return 'Compiled successfully!';
 	} catch (error) {
-		return error.message;
+		// return error.message;
+		console.log(error.message);
+		return String(error.message)
+			.replace(/\n/g, '')
+			.replace(/^.*?-fsyntax-only -x c -/, '')
+			.replace(/<stdin>:/g, '<br>');
 	}
 }
