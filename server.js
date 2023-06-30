@@ -41,7 +41,7 @@ function compile(compiler, flag, text)
 	} catch (error) {
 		// return error.message;
 		console.log(error.message);
-		return String(error.message)
+		return '<br>Compilation failed!<br>' + String(error.message)
 			.replace(/\n/g, '')
 			.replace(/^.*?-fsyntax-only -x c -/, '')
 			.replace(/<stdin>:/g, '<br>');
