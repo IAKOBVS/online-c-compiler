@@ -19,11 +19,6 @@ app.get('/', (req, res) => {
 app.post('/compile', (req, res) => {
 	// capture user input
 	const compiler = req.body.compiler.toLowerCase();
-	if (!compiler.startsWith('gcc')
-	&& !compiler.startsWith('clang')) {
-		res.send('Selected compiler is unavailable! Available compilers: gcc, clang.');
-		return;
-	}
 	const flag = req.body.flag;
 	if (!flag.match(/^[- _+=()0-9A-Za-z]*$/)) {
 		res.send('Passing illegal characters as flags! Only use characters in [- _+=()0-9A-Za-z].')
@@ -36,10 +31,11 @@ app.post('/compile', (req, res) => {
 	res.send(output);
 });
 
-function compile(compiler, flag, text) {
+function compile(compiler, flag, text)
+{
 	try {
 		// compile user text with shell
-		cp.execSync(`printf "%s" "${text}" | ${compiler} ${flag} -Werror -x c -`);
+		cp.execSync(`printf "%s" "${text}" | ${compiler} ${flag} -Werror -fsyntax-only -x c -`);
 		// return compiler output
 		return 'Compiled successfully!';
 	} catch (error) {
