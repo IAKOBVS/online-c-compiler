@@ -21,7 +21,7 @@ app.get('/', (req, res) => {
 app.post('/compile', (req, res) => {
 	const flag = req.body.flag;
 	if (!flag.match(/^[- _+=0-9A-Za-z]*$/)) {
-		res.send('Passing illegal characters as flags! Only use characters in [- _+=0-9A-Za-z].');
+		res.send('Passing illegal characters as flags!<br>Only use characters in [- _+=0-9A-Za-z].');
 		return;
 	}
 	const compiler = req.body.compiler.toLowerCase();
@@ -32,11 +32,11 @@ app.post('/compile', (req, res) => {
 
 function compile(compiler, flag, text)
 {
+	let ret;
 	try {
-		cp.execSync(`printf "%s" "${text}" | ${compiler} ${flag} -Werror -fsyntax-only -x c -`);
-		return 'Compiled successfully!';
+		ret = cp.execSync(`printf "%s\n" "${text}" | ${compiler} ${flag} -Werror -fsyntax-only -x c -`);
 	} catch (error) {
-		return '<br>Compilation failed!<br>' + String(error.message)
+		return '<br>Compilation failed:<br>' + String(error.message)
 			// remove newlines for regex
 			.replace(/\n/g, '')
 			// only show compiler warnings
@@ -44,4 +44,5 @@ function compile(compiler, flag, text)
 			// add newlines
 			.replace(/<stdin>:/g, '<br>');
 	}
+	return 'Compiled successfuly!';
 }
