@@ -19,13 +19,17 @@ app.get('/', (req, res) => {
 })
 
 app.post('/compile', (req, res) => {
+	/** @type {string} */
 	const flag = req.body.flag;
 	if (!flag.match(/^[- _+=0-9A-Za-z]*$/)) {
 		res.send('Passing illegal characters as flags!<br>Only use characters in [- _+=0-9A-Za-z].');
 		return;
 	}
+	/** @type {string} */
 	const compiler = req.body.compiler.toLowerCase();
+	/** @type {string} */
 	const text = req.body.text;
+	/** @type {string} */
 	const output = compile(compiler, flag, text);
 	res.send(output);
 });
@@ -41,6 +45,7 @@ function compile(compiler, flag, text)
 	try {
 		cp.execSync(`printf "%s\n" "${text}" | ${compiler} ${flag} -Werror -fsyntax-only -x c -`);
 	} catch (error) {
+		/** @type {string} */
 		return '<br>Compilation failed:<br>' + String(error.message)
 			// remove newlines for regex
 			.replace(/\n/g, '')
