@@ -32,9 +32,8 @@ app.post('/compile', (req, res) => {
 
 function compile(compiler, flag, text)
 {
-	let ret;
 	try {
-		ret = cp.execSync(`printf "%s\n" "${text}" | ${compiler} ${flag} -Werror -fsyntax-only -x c -`);
+		cp.execSync(`printf "%s\n" "${text}" | ${compiler} ${flag} -Werror -fsyntax-only -x c -`);
 	} catch (error) {
 		return '<br>Compilation failed:<br>' + String(error.message)
 			// remove newlines for regex
