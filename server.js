@@ -30,6 +30,12 @@ app.post('/compile', (req, res) => {
 	res.send(output);
 });
 
+/**
+@param {string} compiler
+@param {string} flag
+@param {string} text
+@return {string}
+*/
 function compile(compiler, flag, text)
 {
 	try {
