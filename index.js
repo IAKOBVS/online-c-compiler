@@ -1,5 +1,6 @@
 // @ts-check
 "use strict";
+
 const port = 3000;
 const express = require("express");
 const app = express();
@@ -22,7 +23,9 @@ app.post("/compile", (req, res) => {
 	/** @type {string} */
 	const flag = req.body.flag;
 	if (!flag.match(/^[- _+=0-9A-Za-z]*$/g)) {
-		res.send("Passing illegal characters as flags!<br>Only use characters in [- _+=0-9A-Za-z].");
+		res.send(
+			"Passing illegal characters as flags!<br>Only use characters in [- _+=0-9A-Za-z]."
+		);
 		return;
 	}
 	/** @type {string} */
@@ -46,10 +49,14 @@ function compile(compiler, flag, text) {
 	const fifoDir = "/tmp/__online_c_compiler__";
 	/** @type {string} */
 	const fifoFile = "__fifo__";
+	/** @type {string} */
+	const fifoPath = path.join(fifoDir, fifoFile);
 	mkfifo(fifoFile, fifoDir);
-	writeToFifo(text, `${fifoDir}/${fifoFile}`);
+	writeToFifo(text, fifoPath);
 	try {
-		cp.execSync(`<${fifoDir}/${fifoFile} ${compiler} ${flag} -Werror -fsyntax-only -x c -`);
+		cp.execSync(
+			`<${fifoPath} ${compiler} ${flag} -Werror -fsyntax-only -x c -`
+		);
 	} catch (error) {
 		return (
 			"<br>Compilation failed:<br>" +
@@ -62,7 +69,7 @@ function compile(compiler, flag, text) {
 				.replace(/<stdin>:/g, "<br>")
 		);
 	}
-	return "Compiled successfuly!";
+	return "<br>Compiled successfuly!";
 }
 
 /**
@@ -72,10 +79,12 @@ function compile(compiler, flag, text) {
  * @returns {void}
  */
 function mkfifo(file, dir) {
-	cp.execSync(`test -e ${dir} || mkdir ${dir}`);
-	/** @type {string} */
-	const fifoPath = `${dir}/${file}`;
-	cp.execSync(`test -e ${fifoPath} || mkfifo ${fifoPath}`);
+	try {
+		cp.execSync(`test -e ${dir} || mkdir ${dir}`);
+		cp.execSync(`test -e ${dir}/${file}} || mkfifo ${dir}/${file}`);
+	} catch (error) {
+		console.log(error.message);
+	}
 }
 
 /**
@@ -85,5 +94,9 @@ function mkfifo(file, dir) {
  * @returns {void}
  */
 function writeToFifo(buf, path) {
-	cp.execFile(`${__dirname}/bin/write_to_file`, [buf, path]);
+	try {
+		cp.execFile(`${__dirname}/bin/write_to_file`, [buf, path]);
+	} catch (error) {
+		console.log(error.message);
+	}
 }
