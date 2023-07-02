@@ -35,10 +35,11 @@ app.post("/compile", (req, res) => {
 });
 
 /**
-@return {string}
-@param {string} compiler
-@param {string} flag
-@param {string} text
+*
+* @param {string} compiler 
+* @param {string} flag 
+* @param {string} text 
+* @returns {string}
 */
 function compile(compiler, flag, text) {
 	/** @type {string} */
@@ -65,9 +66,10 @@ function compile(compiler, flag, text) {
 }
 
 /**
-@return {void}
-@param {string} file
-@param {string} dir
+*
+* @param {string} file
+* @param {string} dir
+* @returns {void}
 */
 function mkfifo(file, dir) {
 	cp.execSync(`test -e ${dir} || mkdir ${dir}`);
@@ -77,9 +79,10 @@ function mkfifo(file, dir) {
 }
 
 /**
-@return {void}
-@param {string} buf
-@param {string} path
+*
+* @param {string} buf
+* @param {string} path
+* @returns {void}
 */
 function writeToFifo(buf, path) {
 	cp.execFile(`${__dirname}/bin/write_to_file`, [buf, path]);
