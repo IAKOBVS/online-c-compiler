@@ -21,7 +21,7 @@ app.get('/', (req, res) => {
 app.post('/compile', (req, res) => {
 	/** @type {string} */
 	const flag = req.body.flag;
-	if (!flag.match(/^[- _+=0-9A-Za-z]*$/)) {
+	if (!flag.match(/^[- _+=0-9A-Za-z]*$/g)) {
 		res.send('Passing illegal characters as flags!<br>Only use characters in [- _+=0-9A-Za-z].');
 		return;
 	}
@@ -51,7 +51,6 @@ function compile(compiler, flag, text)
 	try {
 		cp.execSync(`<${fifoDir}/${fifoFile} ${compiler} ${flag} -Werror -fsyntax-only -x c -`);
 	} catch (error) {
-		/** @type {string} */
 		return '<br>Compilation failed:<br>' + String(error.message)
 			// remove newlines
 			.replace(/\n/g, '')
@@ -60,11 +59,11 @@ function compile(compiler, flag, text)
 			// add newlines
 			.replace(/<stdin>:/g, '<br>');
 	}
-	console.log('Compiled successfuly!');
 	return 'Compiled successfuly!';
 }
 
 /**
+@return {void}
 @param {string} file
 @param {string} dir
 */
@@ -77,6 +76,7 @@ function mkfifo(file, dir)
 }
 
 /**
+@return {void}
 @param {string} buf
 @param {string} path
 */
