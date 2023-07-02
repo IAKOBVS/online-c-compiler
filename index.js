@@ -6,6 +6,10 @@ const express = require("express");
 const app = express();
 const cp = require("child_process");
 const path = require("path");
+const fs = require("fs");
+const os = require("os");
+/** @type {string} */
+const TMP_DIR = os.tmpdir();
 
 app.use(express.static("public"));
 app.use(express.urlencoded({ extended: true }));
@@ -46,57 +50,44 @@ app.post("/compile", (req, res) => {
  */
 function compile(compiler, flag, text) {
 	/** @type {string} */
-	const fifoDir = "/tmp/__online_c_compiler__";
+	const file_dir = path.join(TMP_DIR, "__tmp__");
 	/** @type {string} */
-	const fifoFile = "__fifo__";
-	/** @type {string} */
-	const fifoPath = path.join(fifoDir, fifoFile);
-	mkfifo(fifoFile, fifoDir);
-	writeToFifo(text, fifoPath);
+	const file_path = mktemp(file_dir);
 	try {
-		cp.execSync(
-			`<${fifoPath} ${compiler} ${flag} -Werror -fsyntax-only -x c -`
-		);
+		fs.writeFileSync(file_path, text);
+		cp.execSync(`${compiler} ${flag} -Werror -fsyntax-only -x c ${file_path}`);
 	} catch (error) {
-		return (
-			"<br>Compilation failed:<br>" +
-			String(error.message)
-				// remove newlines
-				.replace(/\n/g, "")
-				// only show compiler warnings
-				.replace(/^.*?-fsyntax-only -x c -/, "")
-				// add newlines
-				.replace(/<stdin>:/g, "<br>")
-		);
+		fs.rmSync(file_path);
+		error.message = error.message.substring(error.message.indexOf(file_path) + file_path.length);
+		error.message = replace_all(error.message, file_path + ":", "");
+		error.message = replace_all(error.message, "\n", "<br>");
+		return "<br>Compilation failed:<br>" + error.message;
 	}
+	fs.rmSync(file_path);
 	return "<br>Compiled successfuly!";
 }
 
 /**
- *
- * @param {string} file
- * @param {string} dir
- * @returns {void}
- */
-function mkfifo(file, dir) {
-	try {
-		cp.execSync(`test -e ${dir} || mkdir ${dir}`);
-		cp.execSync(`test -e ${dir}/${file}} || mkfifo ${dir}/${file}`);
-	} catch (error) {
-		console.log(error.message);
-	}
+@param {string} dir
+@returns {string}
+*/
+function mktemp(dir) {
+	/** @type {string} */
+	let ret;
+	while (
+		(ret = Math.random().toString(36).slice(2, 7)) == "" ||
+		fs.existsSync(path.join(dir, ret))
+	);
+	return dir + ret;
 }
 
 /**
- *
- * @param {string} buf
- * @param {string} path
- * @returns {void}
- */
-function writeToFifo(buf, path) {
-	try {
-		cp.execFile(`${__dirname}/bin/write_to_file`, [buf, path]);
-	} catch (error) {
-		console.log(error.message);
-	}
+@param {string} s
+@param {string} search
+@param {string} replace
+@returns {string}
+*/
+function replace_all(s, search, replace) {
+	for (let tmp = s; (s = s.replace(search, replace)) != tmp; tmp = s);
+	return s;
 }
