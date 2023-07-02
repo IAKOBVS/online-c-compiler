@@ -35,24 +35,52 @@ app.post('/compile', (req, res) => {
 });
 
 /**
+@return {string}
 @param {string} compiler
 @param {string} flag
 @param {string} text
-@return {string}
 */
 function compile(compiler, flag, text)
 {
+	/** @type {string} */
+	const fifoDir = '/tmp/__online_c_compiler__';
+	/** @type {string} */
+	const fifoFile = '__fifo__';
+	mkfifo(fifoFile, fifoDir);
+	writeToFifo(text, `${fifoDir}/${fifoFile}`);
 	try {
-		cp.execSync(`printf "%s\n" "${text}" | ${compiler} ${flag} -Werror -fsyntax-only -x c -`);
+		cp.execSync(`<${fifoDir}/${fifoFile} ${compiler} ${flag} -Werror -fsyntax-only -x c -`);
 	} catch (error) {
 		/** @type {string} */
 		return '<br>Compilation failed:<br>' + String(error.message)
-			// remove newlines for regex
+			// remove newlines
 			.replace(/\n/g, '')
 			// only show compiler warnings
 			.replace(/^.*?-fsyntax-only -x c -/, '')
 			// add newlines
 			.replace(/<stdin>:/g, '<br>');
 	}
+	console.log('Compiled successfuly!');
 	return 'Compiled successfuly!';
+}
+
+/**
+@param {string} file
+@param {string} dir
+*/
+function mkfifo(file, dir)
+{
+	cp.execSync(`test -e ${dir} || mkdir ${dir}`);
+	/** @type {string} */
+	const fifoPath = `${dir}/${file}`;
+	cp.execSync(`test -e ${fifoPath} || mkfifo ${fifoPath}`);
+}
+
+/**
+@param {string} buf
+@param {string} path
+*/
+function writeToFifo(buf, path)
+{
+	cp.execFile(`${__dirname}/bin/write_to_file`, [buf, path]);
 }
