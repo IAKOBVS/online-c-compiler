@@ -38,5 +38,8 @@ module.exports = {
 			"error",
 			"always"
 		]
-	}
+	},
+	"ignorePatterns": [
+		"*.html"
+	]
 };
