@@ -58,7 +58,9 @@ function compile(compiler, flag, text) {
 		cp.execSync(`${compiler} ${flag} -Werror -fsyntax-only -x c ${file_path}`);
 	} catch (error) {
 		fs.rmSync(file_path);
-		error.message = error.message.substring(error.message.indexOf(file_path) + file_path.length);
+		error.message = error.message.substring(
+			error.message.indexOf(file_path) + file_path.length
+		);
 		error.message = replace_all(error.message, file_path + ":", "");
 		error.message = replace_all(error.message, "\n", "<br>");
 		return "<br>Compilation failed:<br>" + error.message;
@@ -88,6 +90,11 @@ function mktemp(dir) {
 @returns {string}
 */
 function replace_all(s, search, replace) {
-	for (let tmp = s; (s = s.replace(search, replace)) != tmp; tmp = s);
+	/** @type {number} */
+	let old_len;
+	do {
+		old_len = s.length;
+		s = s.replace(search, replace);
+	} while (old_len != s.length);
 	return s;
 }
