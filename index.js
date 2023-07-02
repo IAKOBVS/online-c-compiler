@@ -35,12 +35,12 @@ app.post("/compile", (req, res) => {
 });
 
 /**
-*
-* @param {string} compiler 
-* @param {string} flag 
-* @param {string} text 
-* @returns {string}
-*/
+ *
+ * @param {string} compiler
+ * @param {string} flag
+ * @param {string} text
+ * @returns {string}
+ */
 function compile(compiler, flag, text) {
 	/** @type {string} */
 	const fifoDir = "/tmp/__online_c_compiler__";
@@ -66,11 +66,11 @@ function compile(compiler, flag, text) {
 }
 
 /**
-*
-* @param {string} file
-* @param {string} dir
-* @returns {void}
-*/
+ *
+ * @param {string} file
+ * @param {string} dir
+ * @returns {void}
+ */
 function mkfifo(file, dir) {
 	cp.execSync(`test -e ${dir} || mkdir ${dir}`);
 	/** @type {string} */
@@ -79,11 +79,11 @@ function mkfifo(file, dir) {
 }
 
 /**
-*
-* @param {string} buf
-* @param {string} path
-* @returns {void}
-*/
+ *
+ * @param {string} buf
+ * @param {string} path
+ * @returns {void}
+ */
 function writeToFifo(buf, path) {
 	cp.execFile(`${__dirname}/bin/write_to_file`, [buf, path]);
 }
