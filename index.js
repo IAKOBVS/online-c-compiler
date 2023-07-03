@@ -8,7 +8,7 @@ const cp = require("child_process");
 const path = require("path");
 const fs = require("fs");
 const os = require("os");
-const str = require("./lib/str.js");
+const str = require("./lib/str");
 /** @type {string} */
 const TMP_DIR = os.tmpdir();
 
