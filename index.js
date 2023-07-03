@@ -67,12 +67,11 @@ function compile(compiler, flag, text) {
 		cp.execSync(`${compiler} ${flag} -Werror -fsyntax-only -x c ${file_path}`);
 	} catch (error) {
 		fs.rmSync(file_path);
-		error.message = error.message.substring(
-			error.message.indexOf(file_path) + file_path.length
-		);
-		error.message = str.replace_all(error.message, file_path + ":", "");
-		error.message = str.replace_all(error.message, "\n", "<br>");
-		return "<br>Compilation failed:<br>" + error.message;
+		let err = error.message;
+		err = err.substring(err.indexOf(file_path) + file_path.length);
+		err = str.replace_all(err, file_path + ":", "");
+		err = str.replace_all(err, "\n", "<br>");
+		return "<br>Compilation failed:<br>" + err;
 	}
 	fs.rmSync(file_path);
 	return "<br>Compiled successfuly!";
