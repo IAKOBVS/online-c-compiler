@@ -67,6 +67,7 @@ function compile(compiler, flag, text) {
 		cp.execSync(`${compiler} ${flag} -Werror -fsyntax-only -x c ${file_path}`);
 	} catch (error) {
 		fs.rmSync(file_path);
+		/** @type {string} */
 		let err = error.message;
 		err = err.substring(err.indexOf(file_path) + file_path.length);
 		err = str.replace_all(err, file_path + ":", "");
