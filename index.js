@@ -37,6 +37,10 @@ app.post("/compile", (req, res) => {
 	const compiler = req.body.compiler.toLowerCase();
 	/** @type {string} */
 	const text = req.body.text;
+	if (!/\S/.test(text)) {
+		res.send("Source code is empty.");
+		return;
+	}
 	/** @type {string} */
 	const output = compile(compiler, flag, text);
 	res.send(output);
