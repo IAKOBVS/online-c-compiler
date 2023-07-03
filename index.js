@@ -27,14 +27,14 @@ app.get("/", (req, res) => {
 app.post("/compile", (req, res) => {
 	/** @type {string} */
 	const flag = req.body.flag;
-	if (!flag.match(/^[- _+=0-9A-Za-z]*$/g)) {
+	if (/[^- _+=0-9A-Za-z]/.test(flag)) {
 		res.send(
 			"Passing illegal characters as flags!<br>Only use characters in [- _+=0-9A-Za-z]."
 		);
 		return;
 	}
 	/** @type {string} */
-	const compiler = req.body.compiler.toLowerCase();
+	const compiler = req.body.compiler;
 	/** @type {string} */
 	const text = req.body.text;
 	if (!/\S/.test(text)) {
@@ -60,6 +60,10 @@ function compile(compiler, flag, text) {
 	const file_path = str.mktemp(file_dir);
 	try {
 		fs.writeFileSync(file_path, text);
+	} catch (error) {
+		return error.message;
+	}
+	try {
 		cp.execSync(`${compiler} ${flag} -Werror -fsyntax-only -x c ${file_path}`);
 	} catch (error) {
 		fs.rmSync(file_path);
