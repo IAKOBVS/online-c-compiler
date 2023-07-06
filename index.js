@@ -40,7 +40,7 @@ app.post("/compile", (req, res) => {
 	if (!/\S/.test(text)) {
 		res.send("Source code is empty.");
 		return;
-	} else if (/(?:^|\n)\s*#\s*include\s*"/.test(text)) {
+	} else if (/(?:^|\n)[ \t]*#[ \t]*include[ \t]*"/.test(text)) {
 		res.send("Trying to include headers from the filesystem:<br>#include \"header.h\".<br><br>Please use standard includes with angle brackets instead:<br>#include &ltheader.h&gt");
 		return;
 	}
