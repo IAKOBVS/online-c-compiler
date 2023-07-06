@@ -10,7 +10,7 @@ const fs = require("fs");
 const os = require("os");
 const str = require("./lib/str");
 /** @type {string} */
-const TMP_DIR = os.tmpdir();
+const TMPDIR = os.tmpdir();
 
 app.use(express.static("public"));
 app.use(express.urlencoded({ extended: true }));
@@ -55,7 +55,7 @@ app.post("/compile", (req, res) => {
  */
 function compile(compiler, flag, text) {
 	/** @type {string} */
-	const file_dir = path.join(TMP_DIR, "__tmp__");
+	const file_dir = path.join(TMPDIR, "__tmp__");
 	/** @type {string} */
 	const file_path = str.mktemp(file_dir);
 	try {
