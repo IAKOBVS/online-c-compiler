@@ -1,56 +1,106 @@
 <!DOCTYPE html>
 <html>
-	<head>
-		<title>Online C Compiler</title>
-	</head>
-	<body>
-		<h1>Online C Compiler</h1>
-		<h2>Compiler:</h2>
-		<select name="Compilers" id="compilerInput">
-			<option value="gcc">gcc</option>
-			<option value="clang">clang</option>
-		</select>
-		<h2>Flags:</h2>
-		<textarea type="text" id="flagInput">-Wall -Wextra</textarea>
-		<br />
-		<h2>Source code:</h2>
-		<textarea type="text" id="textInput" rows="20" cols="100">
-int main()
+<head>
+    <title>Online C Compiler</title>
+    <style>
+        body {
+            background-color: #1c1c1c;
+            color: #fff;
+            font-family: Arial, sans-serif;
+            padding: 20px;
+        }
+
+        h1, h2 {
+            color: #fff;
+        }
+
+        textarea, select {
+            background-color: #292929;
+            color: #fff;
+            border: none;
+            padding: 5px;
+            width: 100%;
+            margin-bottom: 10px;
+        }
+
+        button {
+            background-color: #4caf50;
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+
+        #output {
+            background-color: #292929;
+            color: #fff;
+            padding: 10px;
+            margin-top: 10px;
+            white-space: pre-wrap;
+            height: 200px; /* Ubah tinggi output sesuai kebutuhan */
+            overflow-y: auto; /* Tambahkan penggaris vertikal jika output melebihi tinggi yang ditentukan */
+        }
+
+        #resultTitle {
+            margin-top: 20px;
+            font-size: 18px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div style="max-width: 600px; margin: 0 auto;">
+        <h1>Online C Compiler</h1>
+        <h2>Compiler:</h2>
+        <select name="Compilers" id="compilerInput">
+            <option value="gcc">gcc</option>
+            <option value="clang">clang</option>
+        </select>
+        <h2>Flags:</h2>
+        <textarea type="text" id="flagInput">-Wall -Wextra</textarea>
+        <br />
+        <h2>Source code:</h2>
+        <textarea type="text" id="textInput" rows="10" style="width: 100%;">int main()
 {
     return 0;
-}</textarea
-		>
-		<button id="submitButton">Compile</button>
-		<div id="output"></div>
-		<script>
-			const submitButton = document.getElementById("submitButton");
-			const compilerInput = document.getElementById("compilerInput");
-			const flagInput = document.getElementById("flagInput");
-			const textInput = document.getElementById("textInput");
-			const output = document.getElementById("output");
+}</textarea>
+        <button id="submitButton">Compile</button>
+        <div id="resultTitle">Result:</div>
+        <div id="output"></div>
+    </div>
+    <script>
+        const submitButton = document.getElementById("submitButton");
+        const compilerInput = document.getElementById("compilerInput");
+        const flagInput = document.getElementById("flagInput");
+        const textInput = document.getElementById("textInput");
+        const output = document.getElementById("output");
 
-			submitButton.addEventListener("click", () => {
-				const compiler = compilerInput.value;
-				const flag = flagInput.value;
-				const text = textInput.value;
+        submitButton.addEventListener("click", () => {
+            const compiler = compilerInput.value;
+            const flag = flagInput.value;
+            const text = textInput.value;
 
-				// send input to server for processing
-				fetch("/compile", {
-					method: "POST",
-					headers: {
-						"Content-Type": "application/json",
-					},
-					body: JSON.stringify({ compiler, flag, text }),
-				})
-					.then((response) => response.text())
-					.then((data) => {
-						// display output from server
-						output.innerHTML = data;
-					})
-					.catch((error) => {
-						console.error("Error:", error);
-					});
-			});
-		</script>
-	</body>
+            // send input to server for processing
+            fetch("/compile", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({ compiler, flag, text }),
+            })
+                .then((response) => response.text())
+                .then((data) => {
+                    // display output from server
+                    output.innerHTML = data;
+                })
+                .catch((error) => {
+                    console.error("Error:", error);
+                });
+        });
+    </script>
+</body>
 </html>
