@@ -47,11 +47,12 @@ app.post("/compile", (req, res) => {
 	}
 	/** @type {string} */
 	let language = req.body.language.toLowerCase();
-	if (language == "")
-		if (compiler.indexOf("+") != -1)
-			language = "c++";
-		else
-			language = "c";
+	if (!/\S/.test(compiler)) {
+		language = compiler.indexOf("+") != -1 ? "c++" : "c";
+	} else if (!/^\s*[-+0-9A-Za-z]{1,}\s*$/.test(language)) {
+		res.send("Passing illegal language!");
+		return;
+	}
 	/** @type {string} */
 	const text = req.body.text;
 	if (!/\S/.test(text)) {
@@ -88,7 +89,9 @@ function compile(compiler, language, flag, text) {
 		return error.message;
 	}
 	try {
-		cp.execSync(`${compiler} ${flag} -Werror -x ${language} ${file_path} -o ${file_out}`);
+		cp.execSync(
+			`${compiler} ${flag} -Werror -x ${language} ${file_path} -o ${file_out}`
+		);
 	} catch (error) {
 		fs.rmSync(file_path);
 		/** @type {string} */
@@ -96,7 +99,7 @@ function compile(compiler, language, flag, text) {
 		err = err.substring(err.indexOf(file_out) + file_out.length);
 		err = str.replace_all(err, file_path + ":", "");
 		err = str.replace_all(err, "\n", "<br>");
-		return "<br>Compilation failed:<br>" + err;
+		return "Compilation failed:<br>" + err;
 	}
 	try {
 		fs.rmSync(file_path);
@@ -104,5 +107,5 @@ function compile(compiler, language, flag, text) {
 	} catch (error) {
 		return error.message;
 	}
-	return "<br>Compiled successfuly!";
+	return "Compiled successfuly!";
 }
