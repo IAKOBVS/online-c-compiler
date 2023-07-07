@@ -69,7 +69,7 @@
 			<h2>Flags:</h2>
 			<textarea type="text" id="flagInput">-Wall -Wextra</textarea>
 			<h2>Source code:</h2>
-			<textarea type="text" id="textInput" rows="10" style="width: 100%">
+			<textarea type="text" id="codeInput" rows="10" style="width: 100%">
 int main()
 {
     return 0;
@@ -84,14 +84,14 @@ int main()
 			const compilerInput = document.getElementById("compilerInput");
 			const languageInput = document.getElementById("languageInput");
 			const flagInput = document.getElementById("flagInput");
-			const textInput = document.getElementById("textInput");
+			const codeInput = document.getElementById("codeInput");
 			const output = document.getElementById("output");
 
 			submitButton.addEventListener("click", () => {
 				const compiler = compilerInput.value;
 				const language = languageInput.value;
 				const flag = flagInput.value;
-				const text = textInput.value;
+				const code = codeInput.value;
 
 				// send input to server for processing
 				fetch("/compile", {
@@ -99,7 +99,7 @@ int main()
 					headers: {
 						"Content-Type": "application/json",
 					},
-					body: JSON.stringify({ compiler, language, flag, text }),
+					body: JSON.stringify({ compiler, language, flag, code }),
 				})
 					.then((response) => response.text())
 					.then((data) => {

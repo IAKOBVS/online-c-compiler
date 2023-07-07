@@ -56,18 +56,23 @@ app.post("/compile", (req, res) => {
 		return;
 	}
 	/** @type {string} */
-	const text = req.body.text;
-	if (!/\S/.test(text)) {
+	let code = req.body.code;
+	if (!/\S/.test(code)) {
 		res.send("Source code is empty.");
 		return;
-	} else if (/(?:^|\n)[ \t]*#[ \t]*include[ \t]*"/.test(text)) {
+	} else if (/(?:^|\n)[ \t]*#[ \t]*include[ \t]*"/.test(code)) {
 		res.send(
 			'Trying to include headers from the filesystem:<br>#include "header.h".<br><br>Use standard includes with angle brackets instead:<br>#include &ltheader.h&gt'
 		);
 		return;
 	}
+	// Force includes to only be able to access files from /usr/include
+	code = code.replace(
+		/(?:^|\n)[ \t]*#[ \t]*include[ \t]*</g,
+		"\n#include </usr/include/"
+	);
 	/** @type {string} */
-	const output = compile(compiler, language, flag, text);
+	const output = compile(compiler, language, flag, code);
 	res.send(output);
 });
 
@@ -76,10 +81,10 @@ app.post("/compile", (req, res) => {
  * @param {string} compiler
  * @param {string} language
  * @param {string} flag
- * @param {string} text
+ * @param {string} code
  * @returns {string}
  */
-function compile(compiler, language, flag, text) {
+function compile(compiler, language, flag, code) {
 	/** @type {string} */
 	const file_dir = path.join(TMPDIR, "__tmp__");
 	/** @type {string} */
@@ -87,7 +92,7 @@ function compile(compiler, language, flag, text) {
 	/** @type {string} */
 	const file_out = str.mktemp(file_dir);
 	try {
-		fs.writeFileSync(file_path, text);
+		fs.writeFileSync(file_path, code);
 	} catch (error) {
 		return error.message;
 	}
