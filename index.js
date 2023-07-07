@@ -34,29 +34,49 @@ app.post("/compile", (req, res) => {
 		return;
 	}
 	/** @type {string} */
-	const compiler = req.body.compiler;
+	const compiler = req.body.compiler.toLowerCase();
+	const allowedCompiler = "Use gcc-*, g++-*, or clang(++)-*.";
+	if (!/\S/.test(compiler)) {
+		res.send(`Compiler is empty.<br>${allowedCompiler}`);
+		return;
+	} else if (
+		!/^\s*(?:gcc|g\+\+|clang|clang\+\+)-{0,1}[0-9]*\s*$/.test(compiler)
+	) {
+		res.send(`Passing illegal compiler!<br>${allowedCompiler}`);
+		return;
+	}
+	/** @type {string} */
+	let language = req.body.language.toLowerCase();
+	if (language == "")
+		if (compiler.indexOf("+") != -1)
+			language = "c++";
+		else
+			language = "c";
 	/** @type {string} */
 	const text = req.body.text;
 	if (!/\S/.test(text)) {
 		res.send("Source code is empty.");
 		return;
 	} else if (/(?:^|\n)[ \t]*#[ \t]*include[ \t]*"/.test(text)) {
-		res.send("Trying to include headers from the filesystem:<br>#include \"header.h\".<br><br>Please use standard includes with angle brackets instead:<br>#include &ltheader.h&gt");
+		res.send(
+			'Trying to include headers from the filesystem:<br>#include "header.h".<br><br>Use standard includes with angle brackets instead:<br>#include &ltheader.h&gt'
+		);
 		return;
 	}
 	/** @type {string} */
-	const output = compile(compiler, flag, text);
+	const output = compile(compiler, language, flag, text);
 	res.send(output);
 });
 
 /**
  *
  * @param {string} compiler
+ * @param {string} language
  * @param {string} flag
  * @param {string} text
  * @returns {string}
  */
-function compile(compiler, flag, text) {
+function compile(compiler, language, flag, text) {
 	/** @type {string} */
 	const file_dir = path.join(TMPDIR, "__tmp__");
 	/** @type {string} */
@@ -68,7 +88,7 @@ function compile(compiler, flag, text) {
 		return error.message;
 	}
 	try {
-		cp.execSync(`${compiler} ${flag} -Werror -x c ${file_path} -o ${file_out}`);
+		cp.execSync(`${compiler} ${flag} -Werror -x ${language} ${file_path} -o ${file_out}`);
 	} catch (error) {
 		fs.rmSync(file_path);
 		/** @type {string} */
