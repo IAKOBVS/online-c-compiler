@@ -26,6 +26,7 @@ app.get("/", (req, res) => {
 
 app.post("/compile", (req, res) => {
 	/** @type {string} */
+	const userid = req.ip;
 	const flag = req.body.flag;
 	if (/[^-\s_+=0-9A-Za-z]/.test(flag)) {
 		res.send(
