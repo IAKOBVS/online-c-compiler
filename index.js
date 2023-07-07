@@ -110,5 +110,6 @@ function compile(compiler, language, flag, text) {
 	} catch (error) {
 		return error.message;
 	}
-	return "Compiled successfuly!";
+	console.log("Compiled successfuly.");
+	return "Compiled successfuly.";
 }
