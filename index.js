@@ -26,7 +26,7 @@ app.get("/", (req, res) => {
 
 app.post("/compile", (req, res) => {
 	const userid = req.ip;
-	console.log(userid);
+	console.log(`Received /compile post request by ${userid}.`);
 	/** @type {string} */
 	const flag = req.body.flag;
 	if (/[^-\s_+=0-9A-Za-z]/.test(flag)) {
@@ -84,6 +84,7 @@ function compile(compiler, language, flag, text) {
 	const file_dir = path.join(TMPDIR, "__tmp__");
 	/** @type {string} */
 	const file_path = str.mktemp(file_dir);
+	/** @type {string} */
 	const file_out = str.mktemp(file_dir);
 	try {
 		fs.writeFileSync(file_path, text);
