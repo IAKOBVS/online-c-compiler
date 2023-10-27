@@ -115,8 +115,8 @@ function compile(compiler, language, flag, code)
 		 */
 		let err = error.message;
 		err = err.substring(err.indexOf(file_out) + file_out.length);
-		err = str.replace_all(err, file_path + ":", "");
-		err = str.replace_all(err, "\n", "<br>");
+		err = str.replaceall(err, file_path + ":", "");
+		err = str.replaceall(err, "\n", "<br>");
 		return "Compilation failed:<br>" + err;
 	}
 	try {
